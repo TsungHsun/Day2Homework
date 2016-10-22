@@ -114,5 +114,17 @@ namespace Day2_Homework.Tests
 
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod()]
+        public void CheckoutTest_都沒買價格應為0()
+        {
+            PotterShoppingCart target = new PotterShoppingCart();
+            int expected = 0;
+
+            target.Checkout();
+            int actual = target.Amount;
+
+            Assert.AreEqual(expected, actual);
+        }
     }
 }
