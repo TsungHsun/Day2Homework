@@ -19,11 +19,22 @@ namespace Day2_Homework
 
         public void Checkout()
         {
-            int qty = _qty.Sum();
-            int unitPrice = this._unitPrice;
-            double discount = this.GetDiscount();
+            while (this._qty.Any(q => q > 0))
+            {
+                int qty = _qty.Count(q => q > 0);
+                int unitPrice = this._unitPrice;
+                double discount = this.GetDiscount();
 
-            this.Amount = Convert.ToInt32(Math.Round(qty * unitPrice * discount));
+                this.Amount += Convert.ToInt32(Math.Round(qty * unitPrice * discount));
+
+                for (int i = 0; i < this._qty.Length; i++)
+                {
+                    if (this._qty[i] > 0)
+                    {
+                        this._qty[i]--;
+                    }
+                }
+            }
         }
 
         private double GetDiscount()
