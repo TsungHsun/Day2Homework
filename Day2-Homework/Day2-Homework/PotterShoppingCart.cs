@@ -8,6 +8,7 @@ namespace Day2_Homework
     public class PotterShoppingCart
     {
         private int[] _qty = new int[5];
+        private int _unitPrice = 100;
 
         public int Amount { get; set; }
 
@@ -18,7 +19,24 @@ namespace Day2_Homework
 
         public void Checkout()
         {
-            this.Amount = _qty.Sum() * 100;
+            int qty = _qty.Sum();
+            int unitPrice = this._unitPrice;
+            double discount = this.GetDiscount();
+
+            this.Amount = Convert.ToInt32(Math.Round(qty * unitPrice * discount));
+        }
+
+        private double GetDiscount()
+        {
+            int differentCount = this._qty.Count(q => q > 0);
+
+            switch (differentCount)
+            {
+                case 2:
+                    return 0.95;
+                default:
+                    return 1;
+            }
         }
     }
 }
