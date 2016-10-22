@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Day2_Homework
 {
     public class PotterShoppingCart
     {
-        private int[] _qty = new int[5];
+        private int[] _qtyRecords = new int[5];
         private int _unitPrice = 100;
 
         /// <summary>
@@ -49,7 +47,7 @@ namespace Day2_Homework
         /// <param name="qty">數量</param>
         public void AddItem(Episode episode, int qty)
         {
-            this._qty[(int)episode] += qty;
+            this._qtyRecords[(int)episode] += qty;
         }
 
         /// <summary>
@@ -61,13 +59,13 @@ namespace Day2_Homework
 
             do
             {
-                int packageQty = _qty.Count(q => q > 0);
+                int packageQty = this._qtyRecords.Count(q => q > 0);
                 double discount = this.GetDiscount(packageQty);
 
-                this.Amount += CalculateAmount(packageQty, discount);
+                this.Amount += this.CalculateAmount(packageQty, discount);
 
                 this.RemoveCheckoutedQty();
-                hasUnchecked = this._qty.Any(q => q > 0);
+                hasUnchecked = this._qtyRecords.Any(q => q > 0);
             } while (hasUnchecked);
         }
 
@@ -87,11 +85,11 @@ namespace Day2_Homework
         /// </summary>
         private void RemoveCheckoutedQty()
         {
-            for (int i = 0; i < this._qty.Length; i++)
+            for (int i = 0; i < this._qtyRecords.Length; i++)
             {
-                if (this._qty[i] > 0)
+                if (this._qtyRecords[i] > 0)
                 {
-                    this._qty[i]--;
+                    this._qtyRecords[i]--;
                 }
             }
         }
