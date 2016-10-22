@@ -63,5 +63,28 @@ namespace Day2_Homework.Tests
 
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod()]
+        public void CheckoutTest_一二三四集各買了一本_價格應為320()
+        {
+            PotterShoppingCart target = new PotterShoppingCart();
+            int qty = 1;
+
+            int episode;
+            episode = 1;
+            target.AddItem(episode, qty);
+            episode = 2;
+            target.AddItem(episode, qty);
+            episode = 3;
+            target.AddItem(episode, qty);
+            episode = 4;
+            target.AddItem(episode, qty);
+            int expected = 320;
+
+            target.Checkout();
+            int actual = target.Amount;
+
+            Assert.AreEqual(expected, actual);
+        }
     }
 }
