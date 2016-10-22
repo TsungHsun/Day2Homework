@@ -34,6 +34,8 @@ namespace Day2_Homework
             {
                 case 2:
                     return 0.95;
+                case 3:
+                    return 0.9;
                 default:
                     return 1;
             }
