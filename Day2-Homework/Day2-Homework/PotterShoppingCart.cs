@@ -10,39 +10,103 @@ namespace Day2_Homework
         private int[] _qty = new int[5];
         private int _unitPrice = 100;
 
-        public int Amount { get; set; }
-
-        public void AddItem(int episode, int qty)
+        /// <summary>
+        /// 發行集數
+        /// </summary>
+        public enum Episode
         {
-            this._qty[episode - 1] += qty;
+            /// <summary>
+            /// 第一集
+            /// </summary>
+            One,
+            /// <summary>
+            /// 第二集
+            /// </summary>
+            Two,
+            /// <summary>
+            /// 第三集
+            /// </summary>
+            Three,
+            /// <summary>
+            /// 第四集
+            /// </summary>
+            Four,
+            /// <summary>
+            /// 第五集
+            /// </summary>
+            Five
         }
 
+        /// <summary>
+        /// 金額
+        /// </summary>
+        public int Amount { get; private set; }
+        
+        /// <summary>
+        /// 新增品項
+        /// </summary>
+        /// <param name="episode">發行集數</param>
+        /// <param name="qty">數量</param>
+        public void AddItem(Episode episode, int qty)
+        {
+            this._qty[(int)episode] += qty;
+        }
+
+        /// <summary>
+        /// 結帳
+        /// </summary>
         public void Checkout()
         {
-            while (this._qty.Any(q => q > 0))
+            bool hasUnchecked;
+
+            do
             {
-                int qty = _qty.Count(q => q > 0);
-                int unitPrice = this._unitPrice;
-                double discount = this.GetDiscount();
+                int packageQty = _qty.Count(q => q > 0);
+                double discount = this.GetDiscount(packageQty);
 
-                this.Amount += Convert.ToInt32(Math.Round(qty * unitPrice * discount));
+                this.Amount += CalculateAmount(packageQty, discount);
 
-                for (int i = 0; i < this._qty.Length; i++)
+                this.RemoveCheckoutedQty();
+                hasUnchecked = this._qty.Any(q => q > 0);
+            } while (hasUnchecked);
+        }
+
+        /// <summary>
+        /// 計算金額
+        /// </summary>
+        /// <param name="qty">數量</param>
+        /// <param name="discount">折扣</param>
+        /// <returns>金額</returns>
+        private int CalculateAmount(int qty, double discount)
+        {
+            return Convert.ToInt32(Math.Round(qty * this._unitPrice * discount));
+        }
+
+        /// <summary>
+        /// 移除已結帳數量
+        /// </summary>
+        private void RemoveCheckoutedQty()
+        {
+            for (int i = 0; i < this._qty.Length; i++)
+            {
+                if (this._qty[i] > 0)
                 {
-                    if (this._qty[i] > 0)
-                    {
-                        this._qty[i]--;
-                    }
+                    this._qty[i]--;
                 }
             }
         }
 
-        private double GetDiscount()
+        /// <summary>
+        /// 取得折扣
+        /// </summary>
+        /// <param name="packageQty">The package qty.</param>
+        /// <returns>折扣趴數</returns>
+        private double GetDiscount(int packageQty)
         {
-            int differentCount = this._qty.Count(q => q > 0);
-
-            switch (differentCount)
+            switch (packageQty)
             {
+                case 1:
+                    return 1;
                 case 2:
                     return 0.95;
                 case 3:
@@ -50,9 +114,8 @@ namespace Day2_Homework
                 case 4:
                     return 0.8;
                 case 5:
-                    return 0.75;
                 default:
-                    return 1;
+                    return 0.75;
             }
         }
     }
