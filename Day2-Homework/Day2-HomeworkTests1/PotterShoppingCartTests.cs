@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Day2_Homework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Day2_Homework.Tests
 {
@@ -115,6 +116,40 @@ namespace Day2_Homework.Tests
         {
             PotterShoppingCart target = new PotterShoppingCart();
             int expected = 0;
+
+            target.Checkout();
+            int actual = target.Amount;
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void CheckoutTest_第一集買一本_其他四集買100本_價格應為32055()
+        {
+            PotterShoppingCart target = new PotterShoppingCart();
+            target.AddItem(PotterShoppingCart.Episode.One, 1);
+            target.AddItem(PotterShoppingCart.Episode.Two, 100);
+            target.AddItem(PotterShoppingCart.Episode.Three, 100);
+            target.AddItem(PotterShoppingCart.Episode.Four, 100);
+            target.AddItem(PotterShoppingCart.Episode.Five, 100);
+            int expected = 32055;
+
+            target.Checkout();
+            int actual = target.Amount;
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void CheckoutTest_第一集買1000本_其他四集買一本_價格應為100275()
+        {
+            PotterShoppingCart target = new PotterShoppingCart();
+            target.AddItem(PotterShoppingCart.Episode.One, 1000);
+            target.AddItem(PotterShoppingCart.Episode.Two, 1);
+            target.AddItem(PotterShoppingCart.Episode.Three, 1);
+            target.AddItem(PotterShoppingCart.Episode.Four, 1);
+            target.AddItem(PotterShoppingCart.Episode.Five, 1);
+            int expected = 100275;
 
             target.Checkout();
             int actual = target.Amount;

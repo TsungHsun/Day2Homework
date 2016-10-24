@@ -1,12 +1,35 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Day2_Homework
 {
     public class PotterShoppingCart
     {
-        private int[] _qtyRecords = new int[5];
-        private int _unitPrice = 100;
+        private Dictionary<Episode, int> _qtyRecords;
+        private Dictionary<int, double> _discountRates;
+        private const int _unitPrice = 100;
+
+        public PotterShoppingCart()
+        {
+            this._qtyRecords = new Dictionary<Episode, int>();
+            this.InitializeDiscountRates();
+        }
+
+        /// <summary>
+        /// 初始化折扣率資料
+        /// </summary>
+        private void InitializeDiscountRates()
+        {
+            this._discountRates = new Dictionary<int, double>()
+            {
+                { 1, 1 },
+                { 2, 0.95 },
+                { 3, 0.9 },
+                { 4, 0.8 },
+                { 5, 0.75 }
+            };
+        }
 
         /// <summary>
         /// 發行集數
@@ -39,7 +62,7 @@ namespace Day2_Homework
         /// 金額
         /// </summary>
         public int Amount { get; private set; }
-        
+
         /// <summary>
         /// 新增品項
         /// </summary>
@@ -47,7 +70,14 @@ namespace Day2_Homework
         /// <param name="qty">數量</param>
         public void AddItem(Episode episode, int qty)
         {
-            this._qtyRecords[(int)episode] += qty;
+            if (this._qtyRecords.ContainsKey(episode))
+            {
+                this._qtyRecords[episode] += qty;
+            }
+            else
+            {
+                this._qtyRecords.Add(episode, qty);
+            }
         }
 
         /// <summary>
@@ -55,17 +85,20 @@ namespace Day2_Homework
         /// </summary>
         public void Checkout()
         {
+            if (!this._qtyRecords.Any()) return;
+
             bool hasUnchecked;
 
             do
             {
-                int packageQty = this._qtyRecords.Count(q => q > 0);
+                int packageQty = this._qtyRecords.Keys.Count;
                 double discount = this.GetDiscount(packageQty);
 
-                this.Amount += this.CalculateAmount(packageQty, discount);
+                int checkoutPackageCount = (this._qtyRecords.Keys.Count == 1) ? this._qtyRecords.Values.First() : this._qtyRecords.Values.Min();
+                this.Amount += this.CalculateAmount(packageQty, discount) * checkoutPackageCount;
 
-                this.RemoveCheckoutedQty();
-                hasUnchecked = this._qtyRecords.Any(q => q > 0);
+                this.RemoveCheckoutedQty(checkoutPackageCount);
+                hasUnchecked = this._qtyRecords.Any();
             } while (hasUnchecked);
         }
 
@@ -77,21 +110,20 @@ namespace Day2_Homework
         /// <returns>金額</returns>
         private int CalculateAmount(int qty, double discount)
         {
-            return Convert.ToInt32(Math.Round(qty * this._unitPrice * discount));
+            return Convert.ToInt32(Math.Round(qty * _unitPrice * discount));
         }
 
         /// <summary>
         /// 移除已結帳數量
         /// </summary>
-        private void RemoveCheckoutedQty()
+        /// <param name="qty">已結帳數量</param>
+        private void RemoveCheckoutedQty(int qty)
         {
-            for (int i = 0; i < this._qtyRecords.Length; i++)
+            foreach (var key in this._qtyRecords.Keys.ToList())
             {
-                if (this._qtyRecords[i] > 0)
-                {
-                    this._qtyRecords[i]--;
-                }
+                this._qtyRecords[key] -= qty;
             }
+            this._qtyRecords = this._qtyRecords.Where(v => v.Value > 0).ToDictionary(k => k.Key, v => v.Value);
         }
 
         /// <summary>
@@ -101,19 +133,13 @@ namespace Day2_Homework
         /// <returns>折扣趴數</returns>
         private double GetDiscount(int packageQty)
         {
-            switch (packageQty)
+            if (this._discountRates.ContainsKey(packageQty))
             {
-                case 1:
-                    return 1;
-                case 2:
-                    return 0.95;
-                case 3:
-                    return 0.9;
-                case 4:
-                    return 0.8;
-                case 5:
-                default:
-                    return 0.75;
+                return this._discountRates[packageQty];
+            }
+            else
+            {
+                throw new NotImplementedException(string.Format("數量{0}折扣%數尚未定義", packageQty));
             }
         }
     }
